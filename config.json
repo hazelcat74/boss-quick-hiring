@@ -1,0 +1,18 @@
+{
+  "chatUrl": "https://www.zhipin.com/web/chat/index",
+  "pdfDir": "C:\\Users\\20501\\Desktop\\uSE\\bosspdf",
+  "cdpUrl": "http://127.0.0.1:9222",
+  "statePath": "./data/state.json",
+  "logDir": "./data/logs",
+  "autoMessageText": "同学你好，此岗位属于字节跳动-data-AI芯片业务组的需求。感兴趣可以发我一份简历，我推给面试官看看~",
+  "maxActionsPerRun": 10,
+  "friendListApiCandidates": [
+    "https://www.zhipin.com/wapi/zprelation/friend/getBossFriendList.json?page=1",
+    "https://www.zhipin.com/wapi/zprelation/friend/getGeekFriendList.json?page=1"
+  ],
+  "selectors": {
+    "sidebarUserItem": ".geek-item-wrap .geek-item",
+    "chatPanel": ".chat-conversation"
+  }
+}
+

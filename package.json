@@ -1,0 +1,23 @@
+{
+  "name": "boss-assistant",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Boss 直聘聊天巡检与推荐页打招呼自动化工具",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "patrol": "tsx src/patrol.ts",
+    "patrol:once": "tsx src/patrol.ts --once",
+    "recommend-greet": "tsx src/recommendGreet.ts"
+  },
+  "dependencies": {
+    "playwright": "^1.49.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
