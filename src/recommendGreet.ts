@@ -174,7 +174,9 @@ async function clickGreetButtons(
   await page.locator("#recommend-list, .recommend-list, .se-recommend").first().waitFor({ state: "visible", timeout: 25000 }).catch(() => {});
   let clicks = 0;
   let stagnant = 0;
+  let consecutiveFailures = 0;
   const stagnantLimit = 25;
+  const failureLimit = 4;
   const greetSelector = [
     "#recommend-list > div > ul > li .operate-side .button-chat-wrap.button-chat button.btn.btn-greet",
     "#recommend-list button.btn.btn-greet",
@@ -182,7 +184,7 @@ async function clickGreetButtons(
   ].join(", ");
   const listSelector = "#recommend-list, .recommend-list, .se-recommend, body";
 
-  while (clicks < maxGreets && stagnant < stagnantLimit) {
+  while (clicks < maxGreets && stagnant < stagnantLimit && consecutiveFailures < failureLimit) {
     let clicked = false;
     for (const root of rootsForBoss(page)) {
       const greet = root
@@ -197,12 +199,18 @@ async function clickGreetButtons(
         await greet.click({ timeout: 10000 });
         clicks++;
         stagnant = 0;
+        consecutiveFailures = 0;
         clicked = true;
         log.info(`打招呼进度 ${clicks}/${maxGreets}`);
         await sleep(randBetween(minMs, maxMs));
         break;
       } catch (e) {
         log.warn(`点击打招呼失败: ${(e as Error).message}`);
+        consecutiveFailures++;
+        if (consecutiveFailures >= failureLimit) {
+          log.warn(`连续打招呼失败 ${failureLimit} 次，自动停止以避免平台异常检测。`);
+          return clicks;
+        }
       }
     }
     if (clicked) continue;

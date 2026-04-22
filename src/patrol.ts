@@ -348,6 +348,8 @@ async function main(): Promise<number> {
 
     let actions = 0;
     let consecutiveOpenFailures = 0;
+    let consecutiveAttachmentFailures = 0;
+    const failureLimit = 4;
     for (let idx = 0; idx < unreadItems.length; idx++) {
       const item = unreadItems[idx]!;
 
@@ -359,6 +361,7 @@ async function main(): Promise<number> {
       try {
         await openChatForFriend(page, config, item);
         consecutiveOpenFailures = 0;
+        consecutiveAttachmentFailures = 0;
         const ok = await verifyChatIdentity(page, displayName(item));
         if (!ok) {
           log.warn(`身份校验未通过，跳过: key=${key} expect≈${name}`);
@@ -380,11 +383,21 @@ async function main(): Promise<number> {
               saveState(config.statePath, state);
             } catch (e) {
               log.error(`保存下载失败: ${(e as Error).message}`);
+              consecutiveAttachmentFailures++;
+              if (consecutiveAttachmentFailures >= failureLimit) {
+                log.warn(`连续附件简历处理失败 ${failureLimit} 次，自动停止以避免平台异常检测。`);
+                break;
+              }
             }
             continue;
           }
           if (cardRes.outcome === "error") {
             log.warn(`消息卡片简历流失败 ${name}: ${cardRes.message}`);
+            consecutiveAttachmentFailures++;
+            if (consecutiveAttachmentFailures >= failureLimit) {
+              log.warn(`连续附件简历处理失败 ${failureLimit} 次，自动停止以避免平台异常检测。`);
+              break;
+            }
           }
         }
 
@@ -408,6 +421,12 @@ async function main(): Promise<number> {
           consecutiveOpenFailures++;
           if (consecutiveOpenFailures >= 2) {
             log.warn("连续 2 个会话切换失败，进入保守暂停，避免触发 Boss 异常检测。");
+            break;
+          }
+        } else {
+          consecutiveAttachmentFailures++;
+          if (consecutiveAttachmentFailures >= failureLimit) {
+            log.warn(`连续附件简历处理失败 ${failureLimit} 次，自动停止以避免平台异常检测。`);
             break;
           }
         }
