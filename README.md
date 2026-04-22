@@ -320,12 +320,4 @@ boss assistant/
 └─ SKILL-recommend-greet.md
 ```
 
-## 维护建议
 
-- 不要提交 `config.json`
-- 不要提交 `data/` 目录中的运行产物
-- 新增中文文档或源码文件时统一使用 UTF-8
-- 如果平台页面结构变化，优先检查：
-  - `src/actions.ts`
-  - `src/zhipinApi.ts`
-  - `config.json` 中的 `textPatterns`
